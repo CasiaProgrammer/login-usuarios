@@ -14,7 +14,7 @@ class UsuarioSeeder extends Seeder
             Usuario::create([
                 'nombre' => fake()->firstName(),
                 'apellido' => fake()->lastName(),
-                'dpi' => fake()->unique()->numerify('##############'), // 14 dígitos
+                'dpi' => fake()->unique()->numerify('#############'), // 13 dígitos
                 'correo_electronico' => fake()->unique()->safeEmail(),
                 'password' => '12345678', // se hashea solo por el cast
             ]);
