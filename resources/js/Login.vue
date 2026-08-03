@@ -7,8 +7,6 @@
         </div>
         <h4 class="fw-semibold mb-1">Bienvenido</h4>
         <p class="text-muted small">Ingresá con tu DPI y contraseña</p>
-        <p class="text-muted small">Usuario de Prueba</p>
-        <p class="text-muted small">DPI: 5934820714908 Contraseña: 12345678</p>
       </div>
 
       <div v-if="error" class="alert alert-danger py-2 small">{{ error }}</div>
