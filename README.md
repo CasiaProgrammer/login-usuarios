@@ -1,58 +1,112 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Mantenimiento de Usuarios
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+CRUD de usuarios desarrollado con Laravel 13 (backend/API) y Vue 3 + Bootstrap (frontend), con autenticación por DPI y borrado lógico (Soft Delete).
 
-## About Laravel
+## Tecnologías
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Backend:** Laravel 13, PHP 8.3
+- **Frontend:** Vue 3 (Composition API), Bootstrap 5, Bootstrap Icons
+- **Base de datos:** MySQL
+- **Autenticación:** Laravel Sanctum (tokens)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Características
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- CRUD completo de usuarios (crear, editar, buscar, dar de baja)
+- Borrado lógico (Soft Delete) — los usuarios "eliminados" no se borran físicamente
+- Login mediante **DPI** (no email) con contraseña encriptada (bcrypt)
+- Búsqueda en tiempo real por nombre, apellido o DPI
+- Interfaz con modal para crear/editar usuarios
+- Seeder con 15 usuarios de prueba
 
-## Learning Laravel
+## Requisitos previos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.3 o superior
+- Composer
+- Node.js y npm
+- MySQL
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Instalación
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 1. Clonar el repositorio
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/CasiaProgrammer/login-usuarios.git
+cd login-usuarios
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Instalar dependencias
 
-## Contributing
+```bash
+composer install
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Configurar el entorno
 
-## Code of Conduct
+El archivo `.env` ya está incluido en este repositorio con la configuración usada durante el desarrollo. Verificá que los datos de conexión a MySQL coincidan con tu entorno:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=login_usuarios
+DB_USERNAME=root
+DB_PASSWORD=
 
-## Security Vulnerabilities
+Si necesitás generar una nueva clave de aplicación:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan key:generate
+```
 
-## License
+### 4. Crear la base de datos
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+mysql -u root -e "CREATE DATABASE login_usuarios;"
+```
+
+### 5. Ejecutar migraciones y seeder
+
+Esto crea las tablas y las llena con 15 usuarios de prueba (contraseña `12345678` para todos):
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+### 6. Levantar los servidores
+
+En una terminal:
+```bash
+php artisan serve
+```
+
+En otra terminal (en paralelo):
+```bash
+npm run dev
+```
+
+### 7. Abrir la aplicación
+
+http://127.0.0.1:8000
+
+## Uso
+
+1. Iniciá sesión con el **DPI** de cualquier usuario del seeder y la contraseña `12345678`
+2. Desde la pantalla principal podés:
+   - Buscar usuarios por nombre, apellido o DPI
+   - Crear un nuevo usuario (botón "Nuevo usuario")
+   - Editar un usuario existente (ícono de lápiz en la tabla)
+   - Dar de baja a un usuario (botón "Dar de baja" dentro del modal de edición)
+
+## Notas técnicas
+
+- El **DPI** debe tener exactamente 13 dígitos numéricos.
+- El campo `password` nunca se expone en las respuestas de la API (oculto mediante `$hidden` en el modelo).
+- Un usuario dado de baja (soft delete) no puede iniciar sesión, ya que Eloquent lo excluye automáticamente de las consultas.
+- Para ver usuarios dados de baja directamente en la base de datos:
+```bash
+  mysql -u root -e "SELECT id, nombre, apellido, dpi, deleted_at FROM login_usuarios.usuarios;"
+```
+
+## Autor
+
+Jonathan Casia
